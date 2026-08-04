@@ -12,7 +12,6 @@
     "type": "symfony-bundle",
     "require": {
         "php": "^8.5",
-        "symfony/cache": "^8.1",
         "symfony/config": "^8.1",
         "symfony/console": "^8.1",
         "symfony/dependency-injection": "^8.1",
@@ -20,6 +19,7 @@
         "symfony/http-client": "^8.1",
         "symfony/http-kernel": "^8.1",
         "survos/data-contracts": "^2.5",
+        "survos/fetch-bundle": "^2.5",
         "survos/kit-bundle": "^2.5"
     },
     "require-dev": {

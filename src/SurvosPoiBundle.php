@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Survos\PoiBundle;
 
+use Survos\FetchBundle\Http\CachingHttpClientFactory;
 use Survos\Kit\AbstractSurvosBundle;
 use Survos\Kit\SurvosKitBundle;
 use Survos\PoiBundle\Service\NominatimPoiCache;
 use Survos\PoiBundle\Service\NominatimPoiClient;
-use Symfony\Component\Cache\Adapter\FilesystemTagAwareAdapter;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Kernel\RequiredBundle;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\HttpClient\CachingHttpClient;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
@@ -23,10 +22,11 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
  * how), search OpenStreetMap/Nominatim for matching churches, schools, shops, parks, etc.
  *
  * Two caching layers, because they cover different things:
- *   - CachingHttpClient (RFC 9111), wired the same way as loc-bundle/omeka-bundle. Verified live
- *     against nominatim.openstreetmap.org: it sends `Cache-Control: no-cache`, so this wrapper is
- *     presently a no-op there — wired anyway for consistency with the rest of mono and in case
- *     that ever changes (a self-hosted Nominatim instance, a different `base_url`, etc.).
+ *   - CachingHttpClient (RFC 9111), wired via fetch-bundle's CachingHttpClientFactory (survos/mono#31
+ *     — shared across loc-bundle and this bundle instead of each copy-pasting the wiring). Verified
+ *     live against nominatim.openstreetmap.org: it sends `Cache-Control: no-cache`, so this wrapper
+ *     is presently a no-op there — wired anyway for consistency and in case that ever changes (a
+ *     self-hosted Nominatim instance, a different `base_url`, etc.).
  *   - NominatimPoiCache (JSONL, keyed by query+viewbox) — the layer that actually matters: an
  *     explicit "never ask Nominatim the same question twice" cache, independent of whatever
  *     headers the origin happens to send. See NominatimPoiClient.
@@ -84,22 +84,14 @@ final class SurvosPoiBundle extends AbstractSurvosBundle
 
         $clientId = 'poi.nominatim.client';
         if ($config['cache_enabled']) {
-            $services->set('survos_poi.http_cache', FilesystemTagAwareAdapter::class)
-                ->args(['poi_http', $config['cache_max_ttl'], '%kernel.cache_dir%/poi_http']);
-
-            $services->set('survos_poi.caching_client', CachingHttpClient::class)
-                ->args([
-                    service('poi.nominatim.client'),
-                    service('survos_poi.http_cache'),
-                    // CachingHttpClient resolves URLs itself before delegating — it does NOT
-                    // inherit the decorated client's own base_uri default option (see loc-bundle,
-                    // same fix), so a relative request (every NominatimPoiClient call) throws
-                    // "scheme is missing" without this.
-                    ['base_uri' => $config['base_url']],
-                    true,
-                    $config['cache_max_ttl'],
-                ]);
-            $clientId = 'survos_poi.caching_client';
+            $clientId = CachingHttpClientFactory::register(
+                container: $container,
+                idPrefix: 'survos_poi',
+                decoratedClientId: 'poi.nominatim.client',
+                cacheDir: '%kernel.cache_dir%/poi_http',
+                maxTtl: $config['cache_max_ttl'],
+                baseUri: $config['base_url'],
+            );
         }
 
         $services->set(NominatimPoiClient::class)
