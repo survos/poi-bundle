@@ -1,0 +1,8 @@
+{
+    "bundles": {
+        "Survos\\PoiBundle\\SurvosPoiBundle": ["all"]
+    },
+    "copy-from-recipe": {
+        "config/": "%CONFIG_DIR%/"
+    }
+}

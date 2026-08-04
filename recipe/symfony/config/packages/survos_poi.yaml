@@ -1,0 +1,2 @@
+survos_poi:
+    nominatim_user_agent: '%env(default::POI_NOMINATIM_USER_AGENT)%'

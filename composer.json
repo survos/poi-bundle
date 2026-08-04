@@ -1,0 +1,34 @@
+{
+    "name": "survos/poi-bundle",
+    "description": "Points of interest (churches, schools, shops, parks, ...) resolved from OpenStreetMap/Nominatim within a known geographic context.",
+    "keywords": ["symfony", "openstreetmap", "poi", "geo", "nominatim"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tac Tacelosky",
+            "email": "tacman@gmail.com"
+        }
+    ],
+    "type": "symfony-bundle",
+    "require": {
+        "php": "^8.5",
+        "symfony/config": "^8.1",
+        "symfony/console": "^8.1",
+        "symfony/dependency-injection": "^8.1",
+        "symfony/framework-bundle": "^8.1",
+        "symfony/http-client": "^8.1",
+        "symfony/http-kernel": "^8.1",
+        "survos/data-contracts": "^2.5",
+        "survos/kit-bundle": "^2.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13.0",
+        "symfony/test-pack": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Survos\\PoiBundle\\": "src/",
+            "Survos\\PoiBundle\\Tests\\": "tests/"
+        }
+    }
+}
