@@ -39,9 +39,35 @@ in the consuming app/pipeline, don't couple the bundles to each other.
 
 ```yaml
 survos_poi:
-    # Required by Nominatim's usage policy — identify your app + a contact.
-    nominatim_user_agent: '%env(default::PLACE_MAP_USER_AGENT)%'
+    # Required by Nominatim's usage policy — identify your app + a contact. No API key: the
+    # public Nominatim instance is free and unauthenticated, this header IS the "who's asking".
+    nominatim_user_agent: '%env(default::POI_NOMINATIM_USER_AGENT)%'
 ```
+
+## Caching
+
+Two layers, because they cover different failure modes:
+
+- **`NominatimPoiCache`** (JSONL, keyed by `query` + `viewbox`) — the one that actually matters.
+  Every result is appended to `%kernel.project_dir%/var/poi-cache.jsonl` (configurable via
+  `cache_path`); a repeated query, even from a fresh process reading the same file, is served
+  from disk and never touches the network. This is what makes it safe to run against a
+  many-thousand-tag pipeline without violating Nominatim's usage policy (no repeated identical
+  queries) — and it's resilient to Nominatim itself being unavailable (verified live: the public
+  instance 403'd a request from this session's environment; a cache is the only thing standing
+  between "add one more tag" and "re-fetch everything").
+- **`CachingHttpClient`** (RFC 9111), wired the same way as `loc-bundle`/`omeka-bundle`, gated by
+  `cache_enabled` (default true). Checked live against `nominatim.openstreetmap.org`: it sends
+  `Cache-Control: no-cache`, so this layer is currently a no-op there — wired anyway for
+  consistency with the rest of mono, and in case a self-hosted Nominatim instance (`base_url`)
+  ever sends real cache headers.
+
+Live (uncached) requests are also throttled to `min_request_interval` seconds apart (default
+`1.1`), per Nominatim's ~1 request/second policy.
+
+A shared `CachingHttpClient` factory in `survos/fetch-bundle` — so this ~15-line wiring block
+isn't duplicated per-bundle — is a reasonable follow-up, not done here; this bundle's copy matches
+`loc-bundle`'s existing pattern exactly.
 
 ## Storage: folio, not a bundle-local table
 

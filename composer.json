@@ -12,6 +12,7 @@
     "type": "symfony-bundle",
     "require": {
         "php": "^8.5",
+        "symfony/cache": "^8.1",
         "symfony/config": "^8.1",
         "symfony/console": "^8.1",
         "symfony/dependency-injection": "^8.1",
