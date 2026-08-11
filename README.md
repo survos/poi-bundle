@@ -65,9 +65,15 @@ Two layers, because they cover different failure modes:
 Live (uncached) requests are also throttled to `min_request_interval` seconds apart (default
 `1.1`), per Nominatim's ~1 request/second policy.
 
-A shared `CachingHttpClient` factory in `survos/fetch-bundle` — so this ~15-line wiring block
-isn't duplicated per-bundle — is a reasonable follow-up, not done here; this bundle's copy matches
-`loc-bundle`'s existing pattern exactly.
+Caching now goes through `fetch-bundle`'s shared `CachingHttpClientFactory` (the ~15-line wiring
+block described above as a follow-up is done — see `SurvosPoiBundle::loadExtension()`), the same
+factory `loc-bundle` uses.
+
+**Retry:** the `poi.nominatim.client` scoped client retries transport errors and HTTP
+500/502/503/504 (Symfony's built-in `retry_failed`, exponential backoff). 429 is deliberately
+excluded — Nominatim's usage policy is the hard ~1 req/sec ceiling already enforced by
+`min_request_interval` above; blind retry-with-backoff on top of a 429 from this specific origin
+is the wrong response, not a missing one.
 
 ## Storage: folio, not a bundle-local table
 

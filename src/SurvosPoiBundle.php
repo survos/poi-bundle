@@ -113,6 +113,13 @@ final class SurvosPoiBundle extends AbstractSurvosBundle
                         'headers' => [
                             'User-Agent' => $config['nominatim_user_agent'] ?? null,
                         ],
+                        // 429 deliberately NOT retried here -- Nominatim's usage policy is a hard
+                        // ~1 req/sec ceiling (see $minRequestInterval below); blind retry-with-backoff
+                        // on top of that is the wrong response to a 429 from this specific origin.
+                        'retry_failed' => [
+                            'enabled' => true,
+                            'http_codes' => [500, 502, 503, 504],
+                        ],
                     ],
                 ],
             ],
