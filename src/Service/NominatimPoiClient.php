@@ -41,7 +41,8 @@ final class NominatimPoiClient
 
     /**
      * @param array{0: float, 1: float, 2: float, 3: float} $viewbox [west, south, east, north] —
-     *     `bounded=1` restricts results to this box rather than merely preferring it.
+     *                                                               `bounded=1` restricts results to this box rather than merely preferring it
+     *
      * @return list<PoiCandidate>
      */
     public function search(string $query, array $viewbox, int $limit = 5): array

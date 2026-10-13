@@ -38,11 +38,11 @@ final class TestKernel extends Kernel
 
     public function getCacheDir(): string
     {
-        return sys_get_temp_dir() . '/poi-bundle-tests/cache/' . spl_object_hash($this);
+        return sys_get_temp_dir().'/poi-bundle-tests/cache/'.spl_object_hash($this);
     }
 
     public function getLogDir(): string
     {
-        return sys_get_temp_dir() . '/poi-bundle-tests/log';
+        return sys_get_temp_dir().'/poi-bundle-tests/log';
     }
 }

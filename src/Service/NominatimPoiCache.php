@@ -22,7 +22,7 @@ final class NominatimPoiCache
     private ?array $entries = null;
 
     /** @var resource|null */
-    private $handle = null;
+    private $handle;
 
     public function __construct(
         private readonly ?string $cachePath,
@@ -49,7 +49,7 @@ final class NominatimPoiCache
             'query' => $query,
             'viewbox' => $viewbox,
             'results' => $rawResults,
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n");
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n");
     }
 
     public function path(): string
@@ -58,7 +58,7 @@ final class NominatimPoiCache
             return $this->cachePath;
         }
 
-        return $this->projectDir . '/var/poi-cache.jsonl';
+        return $this->projectDir.'/var/poi-cache.jsonl';
     }
 
     /** Rounded so float-formatting differences (-73.90 vs -73.9) don't produce false misses. */
@@ -66,7 +66,7 @@ final class NominatimPoiCache
     {
         $box = implode(',', array_map(static fn (float $v): string => number_format($v, 5), $viewbox));
 
-        return sha1($query . '|' . $box);
+        return sha1($query.'|'.$box);
     }
 
     private function load(): void

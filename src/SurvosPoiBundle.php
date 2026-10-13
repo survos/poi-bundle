@@ -31,7 +31,7 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
  *     explicit "never ask Nominatim the same question twice" cache, independent of whatever
  *     headers the origin happens to send. See NominatimPoiClient.
  *
- * No persistence of resolved POIs themselves — {@see \Survos\PoiBundle\Dto\PoiCandidate::toDto()}
+ * No persistence of resolved POIs themselves — {@see Dto\PoiCandidate::toDto()}
  * converts a result to a folio PoiDto (ContentType::POI), folio being the intended storage layer.
  */
 #[RequiredBundle(SurvosKitBundle::class)]

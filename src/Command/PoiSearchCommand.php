@@ -35,14 +35,14 @@ final class PoiSearchCommand
         #[Option('geonameId of the resolved parent city, attached to --as-dto output')] ?int $geoname = null,
     ): int {
         $box = array_map('floatval', explode(',', $viewbox));
-        if (count($box) !== 4) {
+        if (4 !== count($box)) {
             $io->error('--viewbox must be "west,south,east,north"');
 
             return Command::FAILURE;
         }
 
         $candidates = $this->nominatim->search($query, $box, $limit);
-        if ($candidates === []) {
+        if ([] === $candidates) {
             $io->warning(sprintf('No OpenStreetMap results for "%s" within the given box.', $query));
 
             return Command::SUCCESS;

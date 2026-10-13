@@ -17,12 +17,12 @@ final class NominatimPoiClientTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->cacheDir = sys_get_temp_dir() . '/poi-bundle-tests-' . uniqid('', true);
+        $this->cacheDir = sys_get_temp_dir().'/poi-bundle-tests-'.uniqid('', true);
     }
 
     protected function tearDown(): void
     {
-        foreach (glob($this->cacheDir . '/*') ?: [] as $file) {
+        foreach (glob($this->cacheDir.'/*') ?: [] as $file) {
             unlink($file);
         }
         @rmdir($this->cacheDir);
@@ -30,7 +30,7 @@ final class NominatimPoiClientTest extends TestCase
 
     private function cache(): NominatimPoiCache
     {
-        return new NominatimPoiCache(cachePath: $this->cacheDir . '/poi-cache.jsonl', projectDir: $this->cacheDir);
+        return new NominatimPoiCache(cachePath: $this->cacheDir.'/poi-cache.jsonl', projectDir: $this->cacheDir);
     }
 
     #[Test]
@@ -121,7 +121,7 @@ final class NominatimPoiClientTest extends TestCase
 
         // And a fresh NominatimPoiCache instance loading the SAME file (a genuinely new process)
         // still hits the cache, not the network.
-        $thirdCache = new NominatimPoiCache(cachePath: $this->cacheDir . '/poi-cache.jsonl', projectDir: $this->cacheDir);
+        $thirdCache = new NominatimPoiCache(cachePath: $this->cacheDir.'/poi-cache.jsonl', projectDir: $this->cacheDir);
         $third = new NominatimPoiClient($mockClient, $thirdCache, minRequestInterval: 0.0);
         $third->search('Plaza de Ancud', [-73.9, -41.9, -73.7, -41.8]);
         self::assertSame(1, $requestCount);

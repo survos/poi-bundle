@@ -29,10 +29,10 @@ final readonly class PoiCandidate
     }
 
     /**
-     * @param string|null $matchedQuery the literal source tag/caption this candidate was searched
-     *     for (e.g. "Catedral de Ancud"), so it survives alongside OSM's own name in $title
-     * @param int|null $parentGeonameId the resolved city (survos/geonames-bundle geonameId) this
-     *     candidate was searched within, joining POI back to the geonames hierarchy
+     * @param string|null $matchedQuery    the literal source tag/caption this candidate was searched
+     *                                     for (e.g. "Catedral de Ancud"), so it survives alongside OSM's own name in $title
+     * @param int|null    $parentGeonameId the resolved city (survos/geonames-bundle geonameId) this
+     *                                     candidate was searched within, joining POI back to the geonames hierarchy
      */
     public function toDto(?string $matchedQuery = null, ?int $parentGeonameId = null): PoiDto
     {
